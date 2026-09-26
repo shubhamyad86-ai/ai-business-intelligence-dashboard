@@ -1,0 +1,10 @@
+product,warehouse,stock_level,reorder_threshold,unit_cost
+Laptop Pro,Berlin,18,25,1450.0
+Laptop Pro,Paris,42,25,1450.0
+Laptop Pro,Madrid,9,25,1450.0
+Phone X,Berlin,63,30,520.0
+Phone X,Paris,51,30,520.0
+Phone X,Madrid,27,30,520.0
+Tablet A,Berlin,34,20,260.0
+Tablet A,Paris,12,20,260.0
+Tablet A,Madrid,22,20,260.0

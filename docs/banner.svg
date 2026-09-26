@@ -1,0 +1,79 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14181C"/>
+      <stop offset="100%" stop-color="#1B2025"/>
+    </linearGradient>
+    <linearGradient id="lineFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0A458" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#E0A458" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="1200" height="320" rx="14" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="1199" height="319" rx="14" fill="none" stroke="#2B333A" stroke-width="1"/>
+
+  <!-- faint dot grid for instrument-panel feel -->
+  <g fill="#2B333A">
+    <circle cx="40" cy="40" r="1.4"/><circle cx="80" cy="40" r="1.4"/><circle cx="120" cy="40" r="1.4"/>
+    <circle cx="40" cy="80" r="1.4"/><circle cx="80" cy="80" r="1.4"/><circle cx="120" cy="80" r="1.4"/>
+    <circle cx="40" cy="120" r="1.4"/><circle cx="80" cy="120" r="1.4"/><circle cx="120" cy="120" r="1.4"/>
+  </g>
+
+  <!-- status dot -->
+  <circle cx="46" cy="46" r="5" fill="#4FA8A0"/>
+  <circle cx="46" cy="46" r="9" fill="none" stroke="#4FA8A0" stroke-opacity="0.4" stroke-width="2"/>
+
+  <!-- title -->
+  <text x="46" y="150" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="44" font-weight="700" fill="#E7EAED" letter-spacing="-1">
+    AI OPERATIONS ENGINEER
+  </text>
+
+  <!-- accent underline flourish -->
+  <rect x="46" y="168" width="120" height="4" rx="2" fill="#E0A458"/>
+
+  <!-- subtitle -->
+  <text x="46" y="205" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="19" fill="#8B96A1">
+    Turning data into actionable insights — powered by a local LLM.
+  </text>
+
+  <!-- badge chips -->
+  <g font-family="SFMono-Regular, Consolas, monospace" font-size="13" font-weight="600">
+    <rect x="46" y="230" width="96" height="30" rx="15" fill="#211B14" stroke="#7A5E39"/>
+    <text x="94" y="250" fill="#E0A458" text-anchor="middle">OLLAMA</text>
+
+    <rect x="152" y="230" width="88" height="30" rx="15" fill="#0F2422" stroke="#2E6B63"/>
+    <text x="196" y="250" fill="#4FA8A0" text-anchor="middle">FASTAPI</text>
+
+    <rect x="250" y="230" width="66" height="30" rx="15" fill="#20262C" stroke="#2B333A"/>
+    <text x="283" y="250" fill="#E7EAED" text-anchor="middle">RAG</text>
+
+    <rect x="326" y="230" width="88" height="30" rx="15" fill="#20262C" stroke="#2B333A"/>
+    <text x="370" y="250" fill="#E7EAED" text-anchor="middle">DOCKER</text>
+
+    <rect x="424" y="230" width="130" height="30" rx="15" fill="#20262C" stroke="#2B333A"/>
+    <text x="489" y="250" fill="#E7EAED" text-anchor="middle">LOCAL-FIRST</text>
+  </g>
+
+  <!-- mini revenue-trend chart motif, right side -->
+  <g transform="translate(760,60)">
+    <rect x="0" y="0" width="400" height="200" rx="10" fill="#1B2025" stroke="#2B333A"/>
+    <text x="18" y="28" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12" fill="#8B96A1">REVENUE TREND</text>
+
+    <polyline points="20,150 80,120 140,160 200,90 260,130 320,70 380,100"
+              fill="none" stroke="#E0A458" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="20,150 80,120 140,160 200,90 260,130 320,70 380,100 380,180 20,180"
+             fill="url(#lineFill)"/>
+
+    <circle cx="20" cy="150" r="3.5" fill="#E0A458"/>
+    <circle cx="80" cy="120" r="3.5" fill="#E0A458"/>
+    <circle cx="140" cy="160" r="3.5" fill="#E0A458"/>
+    <circle cx="200" cy="90" r="3.5" fill="#E0A458"/>
+    <circle cx="260" cy="130" r="3.5" fill="#E0A458"/>
+    <circle cx="320" cy="70" r="3.5" fill="#E0A458"/>
+    <circle cx="380" cy="100" r="3.5" fill="#E0A458"/>
+
+    <line x1="18" y1="180" x2="382" y2="180" stroke="#2B333A" stroke-width="1"/>
+  </g>
+</svg>

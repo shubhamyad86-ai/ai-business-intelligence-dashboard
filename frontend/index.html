@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Operations Engineer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #14181C;
+      --panel: #1B2025;
+      --panel-2: #20262C;
+      --border: #2B333A;
+      --text: #E7EAED;
+      --text-dim: #8B96A1;
+      --accent: #E0A458;
+      --accent-dim: #7A5E39;
+      --teal: #4FA8A0;
+      --red: #C4564A;
+      --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      min-height: 100vh;
+    }
+
+    .rail {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 0;
+      gap: 22px;
+    }
+
+    .rail .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #14181C;
+      font-size: 13px;
+    }
+
+    .rail .item {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: default;
+      border: 1px solid transparent;
+    }
+
+    .rail .item.active {
+      color: var(--accent);
+      background: #211B14;
+      border-color: var(--accent-dim);
+    }
+
+    main {
+      padding: 28px 32px 40px;
+      max-width: 1240px;
+    }
+
+    header.top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+    }
+
+    header.top h1 {
+      font-size: 22px;
+      margin: 0 0 4px;
+      letter-spacing: -0.01em;
+      font-weight: 650;
+    }
+
+    header.top p {
+      margin: 0;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width:900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .panel h2 {
+      font-size: 12px;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      color: var(--text-dim);
+      margin: 0 0 14px;
+      font-weight: 600;
+    }
+
+    /* Chat panel */
+    #chat-log {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 220px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-bottom: 12px;
+    }
+
+    .msg {
+      font-size: 14px;
+      line-height: 1.5;
+      padding: 10px 13px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+    }
+
+    .msg.user {
+      background: var(--panel-2);
+      align-self: flex-end;
+      max-width: 85%;
+      border: 1px solid var(--border);
+    }
+
+    .msg.agent {
+      background: #211B14;
+      border: 1px solid var(--accent-dim);
+      max-width: 92%;
+    }
+
+    .msg.system-note {
+      color: var(--text-dim);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input-row input {
+      flex: 1;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chat-input-row input:focus {
+      border-color: var(--accent-dim);
+    }
+
+    .chat-input-row button {
+      background: var(--accent);
+      color: #1A1305;
+      border: none;
+      border-radius: 7px;
+      padding: 0 16px;
+      font-weight: 650;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .chat-input-row button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .suggestions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .suggestions button {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 16px;
+      padding: 5px 11px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .suggestions button:hover {
+      border-color: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    /* Metric cards */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .card .label {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .card .value {
+      font-family: var(--mono);
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .card .value.small {
+      font-size: 20px;
+    }
+
+    .card .sub {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .sub.up {
+      color: var(--teal);
+    }
+
+    .sub.down {
+      color: var(--red);
+    }
+
+    canvas {
+      max-height: 190px;
+    }
+
+    .charts-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: var(--text-dim);
+      font-size: 11.5px;
+      font-family: var(--mono);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <nav class="rail">
+      <div class="mark">AI</div>
+      <div class="item active" title="Chat">&#9998;</div>
+      <div class="item" title="Sales">&#8593;</div>
+      <div class="item" title="Reports">&#9633;</div>
+      <div class="item" title="Settings">&#9881;</div>
+    </nav>
+
+    <main>
+      <header class="top">
+        <div>
+          <h1>AI Operations Engineer</h1>
+          <p>Turning data into actionable insights, powered by a local LLM.</p>
+        </div>
+        <div class="status"><span class="dot" id="status-dot"></span><span id="status-text">checking backend…</span>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- Left: chat -->
+        <section class="panel">
+          <h2>Ask your operational question</h2>
+          <div id="chat-log">
+            <div class="msg system-note">Ask about revenue, customers, inventory, or company policies — the agent pulls
+              in the right data before answering.</div>
+          </div>
+          <div class="chat-input-row">
+            <input id="chat-input" type="text" placeholder="Why did revenue drop this month?" />
+            <button id="chat-send">Ask</button>
+          </div>
+          <div class="suggestions">
+            <button data-q="Why did revenue drop this month?">Why did revenue drop?</button>
+            <button data-q="Which product is performing best?">Best product?</button>
+            <button data-q="Are we low on stock anywhere?">Low stock?</button>
+            <button data-q="Who are our top customers?">Top customers?</button>
+            <button data-q="What is our return window for damaged items?">Returns policy?</button>
+          </div>
+          <div style="margin-top:14px;">
+            <a id="download-report" href="/api/report" download="business_report.md"
+              style="color:var(--accent); font-size:12px; text-decoration:none; border:1px solid var(--accent-dim); border-radius:16px; padding:6px 12px;">&#8681;
+              Download full business report (.md)</a> <a href="/api/report.pdf" download="business_report.pdf"
+              style="color:var(--accent);font-size:12px;text-decoration:none;border:1px solid var(--accent-dim);border-radius:16px;padding:6px 12px;margin-left:6px;">&#8681;
+              PDF</a>
+          </div>
+
+          <div style="margin-top:18px; border-top:1px solid var(--border); padding-top:14px;">
+            <div style="font-size:12px; color:var(--text-dim); margin-bottom:8px;">Ask about your own data</div>
+            <div id="dataset-status" style="font-size:12px; color:var(--text-dim); margin-bottom:8px;">No custom dataset
+              uploaded — answering from the built-in demo data.</div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <label
+                style="background:var(--accent); color:#1A1305; border-radius:7px; padding:7px 14px; font-size:13px; font-weight:650; cursor:pointer;">
+                Upload CSV
+                <input id="dataset-file-input" type="file" accept=".csv" style="display:none;" />
+              </label>
+              <button id="dataset-clear-btn"
+                style="display:none; background:transparent; border:1px solid var(--border); color:var(--text-dim); border-radius:7px; padding:7px 14px; font-size:13px; cursor:pointer;">Stop
+                using this dataset</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: metrics -->
+        <section>
+          <div class="cards">
+            <div class="card">
+              <div class="label">Total revenue</div>
+              <div class="value" id="m-total-revenue">—</div>
+            </div>
+            <div class="card">
+              <div class="label">Total orders</div>
+              <div class="value" id="m-total-orders">—</div>
+            </div>
+            <div class="card">
+              <div class="label">Top product</div>
+              <div class="value small" id="m-top-product">—</div>
+            </div>
+            <div class="card">
+              <div class="label">Top country</div>
+              <div class="value small" id="m-top-country">—</div>
+            </div>
+            <div class="card">
+              <div class="label">Total customers</div>
+              <div class="value" id="m-total-customers">—</div>
+            </div>
+            <div class="card">
+              <div class="label">Inventory value</div>
+              <div class="value small" id="m-inventory-value">—</div>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+              <div class="label">Low-stock alerts</div>
+              <div class="value small" id="m-low-stock" style="color:var(--red);">—</div>
+            </div>
+          </div>
+
+          <div class="charts-stack">
+            <div class="panel">
+              <h2>Revenue trend</h2>
+              <canvas id="chart-trend"></canvas>
+            </div>
+            <div class="panel">
+              <h2>Revenue by product / country</h2>
+              <canvas id="chart-split"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer>AI OPERATIONS ENGINEER · LOCAL LLM (OLLAMA) · DATA STAYS ON YOUR MACHINE</footer>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = "";
+
+    async function fetchSummary() {
+      try {
+        const [salesRes, custRes, invRes] = await Promise.all([
+          fetch(`${API_BASE}/api/sales-summary`),
+          fetch(`${API_BASE}/api/customer-summary`),
+          fetch(`${API_BASE}/api/inventory-summary`),
+        ]);
+        if (!salesRes.ok) throw new Error("bad response");
+        const sales = await salesRes.json();
+        renderSummary(sales);
+
+        if (custRes.ok) {
+          const cust = await custRes.json();
+          document.getElementById("m-total-customers").textContent = cust.total_customers ?? "—";
+        }
+        if (invRes.ok) {
+          const inv = await invRes.json();
+          document.getElementById("m-inventory-value").textContent = fmtEUR(inv.total_stock_value);
+          const lowCount = (inv.low_stock || []).length;
+          const lowEl = document.getElementById("m-low-stock");
+          lowEl.textContent = lowCount === 0 ? "None" : `${lowCount} item(s) below threshold`;
+          lowEl.style.color = lowCount === 0 ? "var(--teal)" : "var(--red)";
+        }
+
+        setStatus(true);
+      } catch (e) {
+        setStatus(false);
+      }
+    }
+
+    function setStatus(ok) {
+      const dot = document.getElementById("status-dot");
+      const text = document.getElementById("status-text");
+      if (ok) {
+        dot.style.background = "#4FA8A0"; dot.style.boxShadow = "0 0 8px #4FA8A0";
+        text.textContent = "connected";
+      } else {
+        dot.style.background = "#C4564A"; dot.style.boxShadow = "0 0 8px #C4564A";
+        text.textContent = "backend unreachable — start the FastAPI server";
+      }
+    }
+
+    function fmtEUR(n) {
+      return "€" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+    }
+
+    let trendChart, splitChart;
+
+    function renderSummary(data) {
+      document.getElementById("m-total-revenue").textContent = fmtEUR(data.total_revenue);
+      document.getElementById("m-total-orders").textContent = data.total_orders;
+      document.getElementById("m-top-product").textContent = data.top_product || "—";
+      document.getElementById("m-top-country").textContent = data.top_country || "—";
+
+      const months = Object.keys(data.monthly_revenue).sort();
+      const revenues = months.map(m => data.monthly_revenue[m]);
+
+      const trendCtx = document.getElementById("chart-trend");
+      const chartConfigBase = {
+        plugins: { legend: { labels: { color: "#8B96A1" } } },
+        scales: {
+          x: { ticks: { color: "#8B96A1" }, grid: { color: "#2B333A" } },
+          y: { ticks: { color: "#8B96A1" }, grid: { color: "#2B333A" } }
+        }
+      };
+
+      if (trendChart) trendChart.destroy();
+      trendChart = new Chart(trendCtx, {
+        type: "line",
+        data: {
+          labels: months,
+          datasets: [{
+            label: "Revenue (€)",
+            data: revenues,
+            borderColor: "#E0A458",
+            backgroundColor: "rgba(224,164,88,0.15)",
+            tension: 0.3,
+            fill: true,
+            pointRadius: 3,
+          }]
+        },
+        options: { ...chartConfigBase, responsive: true, maintainAspectRatio: false }
+      });
+      trendCtx.parentElement.style.height = "190px";
+
+      const products = Object.keys(data.product_revenue);
+      const prodVals = products.map(p => data.product_revenue[p]);
+
+      const splitCtx = document.getElementById("chart-split");
+      if (splitChart) splitChart.destroy();
+      splitChart = new Chart(splitCtx, {
+        type: "bar",
+        data: {
+          labels: products,
+          datasets: [{
+            label: "Revenue by product (€)",
+            data: prodVals,
+            backgroundColor: "#4FA8A0",
+            borderRadius: 4,
+          }]
+        },
+        options: { ...chartConfigBase, responsive: true, maintainAspectRatio: false }
+      });
+      splitCtx.parentElement.style.height = "190px";
+    }
+
+    let requestInFlight = false;
+    const REQUEST_TIMEOUT_MS = 300000; // local CPU inference can take several minutes
+    const MAX_HISTORY_TURNS = 3; // keep prompt small on CPU-only hardware — mirrors agent/ai_agent.py
+    let conversationHistory = []; // [{role, content}, ...] across the session
+
+    function setBusy(busy) {
+      requestInFlight = busy;
+      document.getElementById("chat-send").disabled = busy;
+      document.getElementById("chat-input").disabled = busy;
+      document.querySelectorAll(".suggestions button").forEach(b => b.disabled = busy);
+    }
+
+    async function askAgent(question) {
+      if (requestInFlight) {
+        return; // ignore double-clicks / double-submits while a request is already running
+      }
+      setBusy(true);
+
+      const log = document.getElementById("chat-log");
+      const userMsg = document.createElement("div");
+      userMsg.className = "msg user";
+      userMsg.textContent = question;
+      log.appendChild(userMsg);
+
+      const pending = document.createElement("div");
+      pending.className = "msg agent";
+      pending.textContent = "Analyzing…";
+      log.appendChild(pending);
+      log.scrollTop = log.scrollHeight;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+      try {
+        const historyToSend = conversationHistory.slice(-(MAX_HISTORY_TURNS * 2));
+        const res = await fetch(`${API_BASE}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, history: historyToSend }),
+          signal: controller.signal,
+        });
+        const data = await res.json();
+        if (res.ok) {
+          pending.textContent = data.answer + `\n\n(${Math.round(data.latency_ms)} ms${data.fast_path ? ", fast path" : ""})`;
+          conversationHistory.push({ role: "user", content: question });
+          conversationHistory.push({ role: "assistant", content: data.answer });
+        } else {
+          pending.textContent = `Error: ${data.detail || "request failed"}`;
+        }
+      } catch (e) {
+        if (e.name === "AbortError") {
+          pending.textContent = "This is taking longer than expected. Check the terminal running uvicorn for errors, and make sure Ollama is running.";
+        } else {
+          pending.textContent = "Could not reach the backend. Is `uvicorn backend.main:app` running?";
+        }
+      } finally {
+        clearTimeout(timeoutId);
+        setBusy(false);
+      }
+      log.scrollTop = log.scrollHeight;
+    }
+
+    document.getElementById("chat-send").addEventListener("click", () => {
+      const input = document.getElementById("chat-input");
+      const q = input.value.trim();
+      if (!q) return;
+      input.value = "";
+      askAgent(q);
+    });
+    document.getElementById("chat-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("chat-send").click();
+    });
+    document.querySelectorAll(".suggestions button").forEach(btn => {
+      btn.addEventListener("click", () => askAgent(btn.dataset.q));
+    });
+
+    fetchSummary();
+    refreshDatasetStatus();
+
+    async function refreshDatasetStatus() {
+      const statusEl = document.getElementById("dataset-status");
+      const clearBtn = document.getElementById("dataset-clear-btn");
+      try {
+        const res = await fetch(`${API_BASE}/api/dataset/active`);
+        const data = await res.json();
+        if (data.active) {
+          statusEl.textContent = `Answering from: ${data.filename}`;
+          statusEl.style.color = "var(--teal)";
+          clearBtn.style.display = "inline-block";
+        } else {
+          statusEl.textContent = "No custom dataset uploaded — answering from the built-in demo data.";
+          statusEl.style.color = "var(--text-dim)";
+          clearBtn.style.display = "none";
+        }
+      } catch (e) {
+        // backend unreachable — leave the default message, fetchSummary's setStatus already covers the indicator
+      }
+    }
+
+    document.getElementById("dataset-file-input").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const statusEl = document.getElementById("dataset-status");
+      statusEl.textContent = `Uploading ${file.name}…`;
+      statusEl.style.color = "var(--text-dim)";
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch(`${API_BASE}/api/dataset/upload`, { method: "POST", body: formData });
+        const data = await res.json();
+        if (!res.ok) {
+          statusEl.textContent = `Upload failed: ${data.detail || "unknown error"}`;
+          statusEl.style.color = "var(--red)";
+          return;
+        }
+        await refreshDatasetStatus();
+
+        const log = document.getElementById("chat-log");
+        const note = document.createElement("div");
+        note.className = "msg system-note";
+        const dash = data.profile && data.profile.dashboard;
+        let noteText = `Loaded ${data.filename} (${data.rows} rows). Questions will now be answered from this dataset — try asking about it directly.`;
+        if (dash && dash.title) {
+          noteText += `\nDetected type: ${dash.title}.`;
+        }
+        note.textContent = noteText;
+        log.appendChild(note);
+
+        // Refresh the suggestion chips with dataset-specific questions, if any were recommended.
+        if (dash && Array.isArray(dash.questions) && dash.questions.length) {
+          const suggestionsEl = document.querySelector(".suggestions");
+          suggestionsEl.querySelectorAll("[data-dataset-suggestion]").forEach(el => el.remove());
+          dash.questions.slice(0, 4).forEach(q => {
+            const btn = document.createElement("button");
+            btn.textContent = q.length > 40 ? q.slice(0, 37) + "…" : q;
+            btn.title = q;
+            btn.dataset.q = q;
+            btn.setAttribute("data-dataset-suggestion", "1");
+            btn.addEventListener("click", () => askAgent(q));
+            suggestionsEl.appendChild(btn);
+          });
+        }
+
+        log.scrollTop = log.scrollHeight;
+      } catch (err) {
+        statusEl.textContent = "Upload failed: could not reach the backend.";
+        statusEl.style.color = "var(--red)";
+      }
+      e.target.value = ""; // allow re-uploading the same filename later
+    });
+
+    document.getElementById("dataset-clear-btn").addEventListener("click", async () => {
+      try {
+        await fetch(`${API_BASE}/api/dataset/active`, { method: "DELETE" });
+        await refreshDatasetStatus();
+      } catch (e) {
+        // non-fatal; status just won't update until next refresh
+      }
+    });
+  </script>
+</body>
+
+</html>
