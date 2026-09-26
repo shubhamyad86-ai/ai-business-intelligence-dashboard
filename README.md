@@ -1,5 +1,7 @@
 # AI Business Operations Dashboard
 
+![Banner](docs/banner.svg)
+
 > **A full-stack, AI-powered business intelligence and operations platform for turning raw business data into actionable insights.**
 
 ## Overview
@@ -489,12 +491,6 @@ ai-business-operations-dashboard/
 └── main.py
 ```
 
-> Adapt this structure to the actual folders in your repository rather than creating empty directories solely to match the example.
-
----
-
-## Screenshots & Demo
-
 ### Main Operations Dashboard
 
 The dashboard brings the main business indicators together in one interface:
@@ -508,7 +504,7 @@ The dashboard brings the main business indicators together in one interface:
 * Product performance
 * AI business assistant
 
-![Dashboard](docs/dashboard-preview.jpg)
+![Dashboard](docs/dashboard.png)
 
 ---
 
@@ -672,4 +668,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
